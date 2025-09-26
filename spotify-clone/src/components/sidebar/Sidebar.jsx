@@ -1,169 +1,181 @@
-import './Sidebar.css'
+import { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { useNavigate, useLocation } from 'react-router-dom'
+import {
+  Box,
+  Typography,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Avatar,
+  useTheme,
+  useMediaQuery,
+  IconButton,
+  InputBase
+} from '@mui/material'
+import { HomeIcon, SearchIcon, LibraryIcon, SpotifyLogoIcon, FilterIcon } from '../../assets/icons'
+import { setPlaylistSearchQuery } from '../../store/slices/spotifySlice'
 
-function Sidebar() {
+/**
+ * Navigasyon, logo ve kullanıcı çalma listelerini içeren Sidebar bileşeni.
+ */
+const Sidebar = () => {
+  // Tema, medya sorguları, navigasyon ve Redux state'i için hook'lar
+  const theme = useTheme()
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { playlists, playlistSearchQuery } = useSelector((state) => state.spotify)
+  const dispatch = useDispatch()
+
+  // Çalma listelerini Redux store'dan gelen arama sorgusuna göre filtrele
+  const filteredPlaylists = playlists.filter(playlist => 
+    playlist.title.toLowerCase().includes(playlistSearchQuery.toLowerCase())
+  )
+
+  // Navigasyon menü öğeleri
+  const menuItems = [
+    { text: 'Giriş', icon: <HomeIcon />, path: '/' },
+    { text: 'Gözat', icon: <SearchIcon />},
+    { text: 'Kitaplık', icon: <LibraryIcon /> },
+  ]
+
+  // Navigasyon tıklamalarını yönetir
+  const handleNavigation = (path) => {
+    navigate(path)
+    if (isMobile) {
+      setMobileOpen(false)
+    }
+  }
+
   return (
-    <div className="sidebar">
-      <div className="sidebar-header">
-        <div className="spotify-logo">
-          <svg
-            width="148"
-            height="45"
-            viewBox="0 0 148 45"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g clip-path="url(#clip0_6963_388)">
-              <path
-                d="M1.04407 22.6294C1.04407 34.5353 10.9629 44.3706 22.97 44.3706C34.977 44.3706 44.8959 34.5353 44.8959 22.6294C44.8959 10.7235 34.977 1.01764 22.97 1.01764C10.9629 1.01764 1.04407 10.7235 1.04407 22.6294ZM31.0617 32.7235C25.9718 29.6176 19.4462 28.8412 11.8765 30.5235C10.0494 30.7823 9.78833 28.1941 11.3545 27.9353C19.7072 25.9941 26.7548 26.9 32.4973 30.3941C33.933 31.3 32.4973 33.5 31.0617 32.7235ZM33.2804 26.9C27.4074 23.2765 18.4021 22.2412 11.485 24.3118C9.26629 24.9588 8.48322 21.5941 10.5714 21.0765C18.5326 18.747 28.321 19.9118 35.1076 24.0529C36.9347 25.2176 35.1076 28.0647 33.2804 26.9ZM10.4409 17.7118C8.2222 18.4882 6.78657 14.7353 9.26629 13.8294C16.9665 11.5 30.0176 11.8882 38.1093 16.6765C40.328 17.8412 38.2398 21.4647 35.8906 20.1706C28.843 16.0294 17.097 15.6412 10.4409 17.7118ZM59.9047 29.4882C57.686 29.4882 55.5979 28.7118 53.7707 26.9C53.6402 26.9 53.6402 27.0294 53.6402 27.0294L51.552 29.4882C51.4215 29.6176 51.4215 29.747 51.552 29.8765C53.9012 31.947 56.7725 32.9823 59.9047 32.9823C64.3421 32.9823 67.0829 30.5235 67.0829 26.9C67.0829 23.7941 65.1252 22.1118 60.5573 20.9471C56.7725 20.0412 56.1199 19.3941 56.1199 18.1C56.1199 16.8059 57.425 16.0294 59.1217 16.0294C60.8183 16.0294 62.3844 16.6765 64.2116 17.9706C64.2116 17.9706 64.3421 18.1 64.4726 18.1C64.6031 18.1 64.6031 17.9706 64.6031 17.9706L66.4303 15.3823C66.5608 15.2529 66.5608 15.2529 66.4303 15.1235C64.3421 13.4412 61.8624 12.5353 59.1217 12.5353C55.0758 12.5353 52.2046 14.9941 52.2046 18.4882C52.2046 22.2412 54.8148 23.4059 58.9911 24.4412C62.6455 25.2176 63.1675 25.9941 63.1675 27.2882C63.1675 28.7118 61.8624 29.4882 59.9047 29.4882ZM72.3033 19.5235V17.8412C72.3033 17.7118 72.1728 17.5823 72.0423 17.5823H68.649C68.5185 17.5823 68.388 17.7118 68.388 17.8412V36.8647C68.388 36.9941 68.5185 37.1235 68.649 37.1235H72.0423C72.1728 37.1235 72.3033 36.9941 72.3033 36.8647V30.9118C73.6084 32.3353 75.0441 32.9823 77.0017 32.9823C80.5255 32.9823 84.0493 30.2647 84.0493 25.0882C84.0493 19.9118 80.5255 17.3235 77.0017 17.3235C75.0441 17.3235 73.6084 17.9706 72.3033 19.5235ZM76.2187 29.6176C73.8695 29.6176 72.1728 27.6765 72.1728 25.0882C72.1728 22.5 73.8695 20.6882 76.2187 20.6882C78.5679 20.6882 80.134 22.5 80.134 25.0882C80.134 27.6765 78.5679 29.6176 76.2187 29.6176ZM85.0934 25.2176C85.0934 29.6176 88.6172 32.9823 93.1852 32.9823C97.7531 32.9823 101.277 29.4882 101.277 25.0882C101.277 20.6882 97.8836 17.3235 93.3157 17.3235C88.7478 17.3235 85.0934 20.8176 85.0934 25.2176ZM89.0088 25.0882C89.0088 22.5 90.7054 20.6882 93.1852 20.6882C95.6649 20.6882 97.492 22.6294 97.492 25.2176C97.492 27.8059 95.7954 29.6176 93.3157 29.6176C90.8359 29.6176 89.0088 27.6765 89.0088 25.0882ZM107.28 17.5823V13.8294C107.28 13.7 107.28 13.5706 107.15 13.5706H103.757C103.626 13.5706 103.496 13.7 103.496 13.8294V17.5823H101.799C101.668 17.5823 101.538 17.7118 101.538 17.8412V20.6882C101.538 20.8176 101.668 20.9471 101.799 20.9471H103.496V28.4529C103.496 31.4294 104.931 32.9823 107.933 32.9823C109.108 32.9823 110.282 32.7235 111.196 32.2059C111.326 32.2059 111.326 32.0765 111.326 31.947V29.2294C111.326 29.1 111.326 28.9706 111.196 28.9706H110.935C110.282 29.3588 109.499 29.4882 108.847 29.4882C107.802 29.4882 107.28 28.9706 107.28 27.9353V20.9471H111.196C111.326 20.9471 111.457 20.8176 111.457 20.6882V17.8412C111.457 17.7118 111.326 17.5823 111.196 17.5823H107.28ZM124.116 17.1941C124.116 15.7706 124.638 15.2529 125.813 15.2529C126.466 15.2529 127.118 15.2529 127.771 15.5118H127.901C127.901 15.5118 128.032 15.3823 128.032 15.2529V12.5353C128.032 12.4059 128.032 12.2765 127.901 12.2765C127.249 12.0176 126.335 11.8882 125.03 11.8882C121.898 11.8882 120.332 13.7 120.332 16.9353V17.5823H118.635C118.504 17.5823 118.374 17.7118 118.374 17.8412V20.6882C118.374 20.8176 118.504 20.9471 118.635 20.9471H120.332V32.4647C120.332 32.5941 120.462 32.7235 120.593 32.7235H123.986C124.116 32.7235 124.116 32.5941 124.116 32.4647V20.9471H127.379L132.208 32.4647C131.686 33.6294 131.164 33.8882 130.381 33.8882C129.728 33.8882 129.076 33.7588 128.423 33.3706H128.293L128.162 33.5L126.988 35.9588C126.988 36.0882 126.988 36.347 127.118 36.347C128.293 36.9941 129.337 37.2529 130.642 37.2529C133.122 37.2529 134.557 36.0882 135.732 32.9823L141.605 17.9706V17.7118C141.605 17.5823 141.474 17.5823 141.344 17.5823H137.82C137.69 17.5823 137.69 17.7118 137.69 17.8412L134.035 27.9353L130.12 17.8412C130.12 17.7118 129.989 17.5823 129.859 17.5823H124.116V17.1941ZM113.284 17.5823C113.153 17.5823 113.023 17.7118 113.023 17.8412V32.4647C113.023 32.5941 113.153 32.7235 113.284 32.7235H116.677C116.808 32.7235 116.808 32.5941 116.808 32.4647V17.8412C116.808 17.7118 116.808 17.5823 116.677 17.5823H113.284ZM112.501 13.3118C112.501 14.6059 113.675 15.7706 114.981 15.7706C116.286 15.7706 117.33 14.6059 117.33 13.3118C117.33 12.0176 116.286 10.9823 114.981 10.9823C113.675 10.9823 112.501 12.0176 112.501 13.3118ZM144.476 22.2412C145.781 22.2412 146.956 21.2059 146.956 19.9118C146.956 18.6176 145.781 17.5823 144.476 17.5823C143.171 17.5823 142.127 18.6176 142.127 19.9118C142.127 21.2059 143.171 22.2412 144.476 22.2412ZM144.476 17.8412C145.651 17.8412 146.695 18.747 146.695 19.9118C146.695 21.0765 145.651 21.9823 144.476 21.9823C143.302 21.9823 142.388 21.0765 142.388 19.9118C142.388 18.747 143.302 17.8412 144.476 17.8412ZM144.998 20.1706C145.39 20.0412 145.651 19.7823 145.651 19.3941C145.651 18.8765 145.129 18.6176 144.607 18.6176H143.563V21.0765H144.085V20.3H144.607L145.129 21.0765H145.781L144.998 20.1706ZM144.607 19.0059C144.868 19.0059 145.129 19.1353 145.129 19.3941C145.129 19.6529 144.868 19.7823 144.607 19.7823H144.085V19.0059H144.607Z"
-                fill="white"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_6963_388">
-                <rect
-                  width="148"
-                  height="44"
-                  fill="white"
-                  transform="translate(0 0.5)"
-                />
-              </clipPath>
-            </defs>
-          </svg>
-        </div>
-      </div>
+    <Box sx={{
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+      backgroundColor: '#000000',
+      color: 'white',
+      p: 1
+    }}>
+      {/* Spotify Logosu */}
+      <Box sx={{ p: 2, display: 'flex', alignItems: 'center' }}>
+        <SpotifyLogoIcon />
+      </Box>
 
-      <div className="sidebar-nav">
-        <div className="nav-item active">
-          <svg
-            width="16"
-            height="17"
-            viewBox="0 0 16 17"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <g clip-path="url(#clip0_6963_403)">
-              <path
-                d="M14.8319 16.1H9.51823V10.7H6.48182V16.1H1.16815V4.87625L8.00003 0.900024L14.8319 4.84913V16.1Z"
-                fill="white"
-              />
-            </g>
-            <defs>
-              <clipPath id="clip0_6963_403">
-                <rect
-                  width="16"
-                  height="16"
-                  fill="white"
-                  transform="translate(0 0.5)"
-                />
-              </clipPath>
-            </defs>
-          </svg>
-
-          <span>Giriş</span>
-        </div>
-        <div className="nav-item">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
-            <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z" />
-          </svg>
-          <span>Gözat</span>
-        </div>
-        <div className="nav-item">
-          <svg
-            width="16"
-            height="17"
-            viewBox="0 0 16 17"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              opacity="0.6"
-              d="M9.17679 1.15988L15.6 15.5852L14.8548 15.9186L8.43153 1.49331L9.17679 1.15988ZM0.400024 15.9088V1.08142H1.22379V15.9088H0.400024ZM5.34249 15.9088V1.08142H6.16626V15.9088H5.34249Z"
-              fill="white"
-            />
-          </svg>
-
-          <span>Kitaplık</span>
-        </div>
-      </div>
-
-      <div className="sidebar-playlists">
-        <div className="playlists-section">
-          <h3 className="playlists-title">ÇALMA LİSTELERİN</h3>
-          <div className="playlists-search">
-            <div className="search-container">
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
+      {/* Ana Navigasyon (Giriş, Gözat, Kitaplık) */}
+      <Box>
+        <List dense>
+          {menuItems.map((item) => (
+            <ListItem key={item.text} disablePadding>
+              <ListItemButton
+                onClick={item.path === '/' ? () => handleNavigation(item.path) : null}
+                sx={{
+                  borderRadius: 1,
+                  mb: 0.5,
+                  backgroundColor: location.pathname === item.path ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+                  cursor: item.path === '/' ? 'pointer' : 'default',
+                  '&:hover': {
+                    backgroundColor: item.path === '/' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                  },
+                }}
               >
-                <circle cx="11" cy="11" r="8"></circle>
-                <path d="m21 21-4.35-4.35"></path>
-              </svg>
-              <input type="text" placeholder="Ara" />
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <polygon points="22,3 2,3 10,12.5 10,21 14,21 14,12.5 22,3"></polygon>
-              </svg>
-            </div>
-          </div>
-        </div>
+                <ListItemIcon sx={{ color: 'white', minWidth: 40 }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.text}
+                  sx={{
+                    '& .MuiListItemText-primary': {
+                      fontSize: '0.9rem',
+                      color: 'white',
+                      fontWeight: location.pathname === item.path ? 'bold' : 'normal'
+                    }
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
 
-        <div className="playlists-list">
-          <div className="playlist-item">
-            <span>Rock Save the Queen</span>
-          </div>
-          <div className="playlist-item">
-            <span>AdFab Open Space</span>
-          </div>
-          <div className="playlist-item">
-            <div className="playlist-circle"></div>
-            <span>Hareketli Müzik</span>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M6 10c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm6 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
-            </svg>
-          </div>
-          <div className="playlist-item">
-            <span>Klasik Müzik Listem</span>
-          </div>
-          <div className="playlist-item">
-            <span>Bandes Originales & Pop C...</span>
-          </div>
-          <div className="playlist-item">
-            <span>Shazamladıkların</span>
-          </div>
-          <div className="playlist-item">
-            <span>2019 Favori Listesi</span>
-          </div>
-          <div className="playlist-item">
-            <span>Rock Akustik</span>
-          </div>
-          <div className="playlist-item">
-            <div className="playlist-circle"></div>
-            <span>Pop çalma listesi</span>
-          </div>
-          <div className="playlist-item">
-            <span>Radyo Favorilerin</span>
-          </div>
-          <div className="playlist-item">
-            <span>Nova Like - Le Grand Mix</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+      {/* Kullanıcının Çalma Listeleri Bölümü */}
+      <Box sx={{ flex: 1, overflow: 'auto', mt: 2, px: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+          <Typography variant="body2" sx={{
+            color: 'text.secondary',
+            fontWeight: 'bold',
+            fontSize: '0.75rem',
+            letterSpacing: '1px',
+            textTransform: 'uppercase',
+          }}>
+            ÇALMA LİSTELERİN
+          </Typography>
+        </Box>
+        {/* Çalma Listesi Arama Girişi */}
+        <Box sx={{
+          display: 'flex',
+          alignItems: 'center',
+          backgroundColor: 'rgba(255, 255, 255, 0.1)',
+          borderRadius: 1,
+          px: 1,
+          py: 0.5,
+          mb: 1
+        }}>
+          <SearchIcon sx={{ color: 'text.secondary', fontSize: 16, mr: 1 }} />
+          <InputBase
+            placeholder="Ara"
+            sx={{ ml: 1, flex: 1, color: 'white', fontSize: '0.8rem' }}
+            value={playlistSearchQuery}
+            onChange={(e) => dispatch(setPlaylistSearchQuery(e.target.value))}
+          />
+        </Box>
+        {/* Filtrelenmiş Çalma Listelerinin Listesi */}
+        <List dense>
+          {filteredPlaylists.map((playlist, index) => (
+            <ListItem key={index} disablePadding>
+              <ListItemButton sx={{
+                borderRadius: 1,
+                mb: 0.5,
+                '&:hover': {
+                  backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                },
+              }}>
+                <ListItemIcon sx={{ minWidth: 40 }}>
+                  <Avatar
+                    src={playlist.image}
+                    sx={{ width: 32, height: 32 }}
+                    variant="rounded"
+                  />
+                </ListItemIcon>
+                <ListItemText
+                  primary={playlist.title}
+                  secondary={playlist.description}
+                  sx={{
+                    '& .MuiListItemText-primary': {
+                      fontSize: '0.85rem',
+                      color: 'text.primary',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    },
+                    '& .MuiListItemText-secondary': {
+                      fontSize: '0.75rem',
+                      color: 'text.secondary',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap'
+                    }
+                  }}
+                />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+      </Box>
+    </Box>
+  )
 }
 
 export default Sidebar
