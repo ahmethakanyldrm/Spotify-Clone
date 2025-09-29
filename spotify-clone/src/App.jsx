@@ -1,10 +1,11 @@
 import { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { CssBaseline, ThemeProvider, createTheme, GlobalStyles, Box } from '@mui/material'
+import { CssBaseline, ThemeProvider, GlobalStyles, Box } from '@mui/material'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
 import { fetchSpotifyData } from './store/slices/spotifySlice'
 import Layout from './components/Layout/Layout'
 import Home from './pages/Home/Home'
+import Browse from './pages/Browse/Browse'
 import './App.css'
 
 const scrollbarStyles = (
@@ -44,6 +45,7 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/browse" element={<Browse />} />
           </Routes>
         </Layout>
       </Box>

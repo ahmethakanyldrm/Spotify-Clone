@@ -92,9 +92,12 @@ const Layout = ({ children }) => {
           sx={{
             flex: 1,
             overflow: 'auto',
-            paddingBottom: currentTrack ? '90px' : 0, // Müzik çalar varken içeriğin alttan boşluklu olması için
+            paddingBottom: currentTrack ? '140px' : 0, // Müzik çalar varken içeriğin alttan boşluklu olması için
             backgroundColor: '#121212',
             p: 3,
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'column'
           }}
         >
           {/* App.jsx'ten gelen ana sayfa içeriği (children) burada render edilir */}
