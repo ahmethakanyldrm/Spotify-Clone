@@ -1,116 +1,143 @@
-import { useState } from 'react'
-import { useSelector } from 'react-redux'
-import {
-  Box,
-  Drawer,
-  useTheme,
-  useMediaQuery
-} from '@mui/material'
-import Sidebar from '../Sidebar/Sidebar'
-import Header from '../Header/Header'
-import MusicPlayer from '../MusicPlayer/MusicPlayer'
+import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Box, Drawer } from '@mui/material';
+import Sidebar from '../Sidebar/Sidebar';
+import Header from '../Header/Header';
+import MusicPlayer from '../MusicPlayer/MusicPlayer';
 
-const drawerWidth = 240 // Sidebar genişliği
+const drawerWidth = 240;
 
-/**
- * Uygulamanın ana yerleşimini (Sidebar, Header, ana içerik, MusicPlayer) oluşturan bileşen.
- * Aynı zamanda mobil ve masaüstü görünümler arasındaki geçişi yönetir.
- */
 const Layout = ({ children }) => {
-  // Tema, medya sorguları ve mobil menü durumu için hook'lar
-  const theme = useTheme()
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  const [mobileOpen, setMobileOpen] = useState(false) // Mobil menünün açık/kapalı durumu
-  const { currentTrack } = useSelector((state) => state.spotify)
 
-  // Mobil menüyü açıp kapatan fonksiyon
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const { currentTrack } = useSelector((state) => state.spotify);
+
   const handleDrawerToggle = () => {
-    setMobileOpen(!mobileOpen)
-  }
+    setMobileOpen(!mobileOpen);
+  };
 
   return (
-    <Box sx={{ display: 'flex', height: '100vh' }}>
-      {/* Masaüstü Görünüm için Kalıcı Sidebar */}
-      {!isMobile && (
-        <Box
-          component="nav"
-          sx={{ width: drawerWidth, flexShrink: 0 }}
-        >
-          <Drawer
-            variant="permanent"
-            sx={{
-              '& .MuiDrawer-paper': {
-                width: drawerWidth,
-                backgroundColor: '#000000',
-                borderRight: '1px solid rgba(255, 255, 255, 0.1)',
-                boxSizing: 'border-box',
-              },
-            }}
-          >
-            <Sidebar />
-          </Drawer>
-        </Box>
-      )}
-
-      {/* Mobil Görünüm için Geçici Çekmece Menü */}
-      {isMobile && (
+    <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#000' }}>
+      <Box
+        component="nav"
+        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
+      >
         <Drawer
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
+          ModalProps={{ keepMounted: true }}
           sx={{
+            display: { xs: 'block', md: 'none' },
             '& .MuiDrawer-paper': {
-              width: drawerWidth,
-              backgroundColor: '#000000',
               boxSizing: 'border-box',
+              width: drawerWidth,
+              backgroundColor: '#000',
+              borderRight: 'none',
             },
           }}
         >
           <Sidebar />
         </Drawer>
-      )}
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: 'none', md: 'block' },
+            '& .MuiDrawer-paper': {
+              boxSizing: 'border-box',
+              width: drawerWidth,
+              backgroundColor: '#000',
+              borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+            },
+          }}
+          open
+        >
+          <Sidebar />
+        </Drawer>
+      </Box>
 
-      {/* Ana İçerik Alanı */}
       <Box
         component="main"
         sx={{
           flexGrow: 1,
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '100vh',
-          backgroundColor: '#121212',
+          height: '100vh',
+          overflow: 'auto',
+          width: '1506px',
+          maxWidth: '1506px',
+          minWidth: '1506px',
+          flexShrink: 0,
+          backgroundColor: '#121212'
         }}
       >
-        {/* Header */}
-        <Header onMenuClick={handleDrawerToggle} />
-
-        {/* Content Area */}
         <Box
           sx={{
-            flex: 1,
-            overflow: 'auto',
-            paddingBottom: currentTrack ? '140px' : 0, // Müzik çalar varken içeriğin alttan boşluklu olması için
+            flexGrow: 1,
+            overflowY: 'auto',
+            overflowX: 'hidden',
+            position: 'relative',
             backgroundColor: '#121212',
-            p: 3,
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column'
+            borderRadius: { md: '8px' },
+            mb: currentTrack ? '200px' : '100px',
+            width: '1506px',
+            maxWidth: '1506px',
+            minWidth: '1506px',
+            flexShrink: 0,
+            minHeight: '100vh',
+            '&::-webkit-scrollbar': {
+              width: '12px',
+            },
+            '&::-webkit-scrollbar-track': {
+              background: 'transparent',
+            },
+            '&::-webkit-scrollbar-thumb': {
+              backgroundColor: 'rgba(255, 255, 255, 0.3)',
+              borderRadius: '10px',
+              border: '3px solid transparent',
+              backgroundClip: 'content-box',
+            },
+            '&::-webkit-scrollbar-thumb:hover': {
+              backgroundColor: 'rgba(255, 255, 255, 0.5)',
+            },
           }}
         >
-          {/* App.jsx'ten gelen ana sayfa içeriği (children) burada render edilir */}
-          {children}
+          <Header onMenuClick={handleDrawerToggle} />
+          <Box sx={{ 
+            py: 3, 
+            pl: 3, 
+            pr: 3, 
+            width: '100%',
+            maxWidth: '100%',
+            overflowX: 'hidden'
+          }}>
+            {children}
+          </Box>
         </Box>
 
-        {/* Müzik Çalar Alanı */}
-        <Box>
-          <MusicPlayer />
-        </Box>
+        {currentTrack && (
+          <Box
+            sx={{
+              position: 'fixed',
+              bottom: 0,
+              left: { md: drawerWidth },
+              right: 0,
+              height: '90px',
+              backgroundColor: '#181818',
+              borderTop: '1px solid #282828',
+              zIndex: 1300,
+              m: { md: 1 },
+              mt: 0,
+              borderBottomLeftRadius: { md: '8px' },
+              borderBottomRightRadius: { md: '8px' },
+            }}
+          >
+            <MusicPlayer />
+          </Box>
+        )}
       </Box>
     </Box>
-  )
-}
+  );
+};
 
-export default Layout
+export default Layout;

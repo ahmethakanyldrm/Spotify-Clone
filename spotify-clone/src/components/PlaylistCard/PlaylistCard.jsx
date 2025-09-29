@@ -92,24 +92,32 @@ const PlaylistCard = ({ title, subtitle, image }) => {
       </Typography>
 
       <Fade in={isHovered}>
-        <IconButton
+        <Box
           className="play-button"
-          onClick={handlePlayClick}
           sx={{
             position: 'absolute',
-            bottom: 90,
-            right: 20,
+            bottom: 120,
+            right: 24,
+            width: 48,
+            height: 48,
+            borderRadius: '50%',
             backgroundColor: 'primary.main',
-            color: 'black',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
+            transition: 'transform 0.2s ease-in-out, background-color 0.2s ease',
             '&:hover': {
+              transform: 'scale(1.05)',
               backgroundColor: '#1ed760',
-              transform: 'scale(1.05)'
             }
           }}
+          onClick={handlePlayClick}
         >
-          {isThisCardPlaying ? <PauseIcon fontSize="large" /> : <PlayArrowIcon fontSize="large" />}
-        </IconButton>
+          <IconButton sx={{ color: 'black' }}>
+            {isThisCardPlaying ? <PauseIcon sx={{ fontSize: 40 }} /> : <PlayArrowIcon sx={{ fontSize: 40 }} />}
+          </IconButton>
+        </Box>
       </Fade>
     </Box>
   )

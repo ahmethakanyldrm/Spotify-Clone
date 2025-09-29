@@ -38,7 +38,7 @@ const Sidebar = () => {
   // Navigasyon menü öğeleri
   const menuItems = [
     { text: 'Giriş', icon: <HomeIcon />, path: '/' },
-    { text: 'Gözat', icon: <SearchIcon />},
+    { text: 'Gözat', icon: <SearchIcon />, path: '/browse' },
     { text: 'Kitaplık', icon: <LibraryIcon /> },
   ]
 
@@ -70,14 +70,14 @@ const Sidebar = () => {
           {menuItems.map((item) => (
             <ListItem key={item.text} disablePadding>
               <ListItemButton
-                onClick={item.path === '/' ? () => handleNavigation(item.path) : null}
+                onClick={item.path ? () => handleNavigation(item.path) : null}
                 sx={{
                   borderRadius: 1,
                   mb: 0.5,
                   backgroundColor: location.pathname === item.path ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
-                  cursor: item.path === '/' ? 'pointer' : 'default',
+                  cursor: item.path ? 'pointer' : 'default',
                   '&:hover': {
-                    backgroundColor: item.path === '/' ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
+                    backgroundColor: item.path ? 'rgba(255, 255, 255, 0.2)' : 'transparent',
                   },
                 }}
               >

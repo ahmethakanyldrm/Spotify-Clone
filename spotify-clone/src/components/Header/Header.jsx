@@ -28,11 +28,14 @@ const Header = ({ onMenuClick }) => {
       alignItems: 'center',
       justifyContent: 'space-between',
       p: 2,
+      height: 72,
+      width: '1506px',
+      maxWidth: '1506px',
+      minWidth: '1506px',
       backgroundColor: alpha(theme.palette.background.paper, 0.7),
       backdropFilter: 'blur(10px)',
-      position: 'sticky',
-      top: 0,
-      zIndex: 1100
+      borderBottom: '1px solid rgba(255,255,255,0.08)',
+      flexShrink: 0
     }}>
       {/* Sol Taraf: Navigasyon Okları ve Arama Çubuğu */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
@@ -56,7 +59,10 @@ const Header = ({ onMenuClick }) => {
           backgroundColor: alpha(theme.palette.background.default, 0.7),
           borderRadius: 25,
           p: '4px 12px',
-          width: 300
+          width: 300,
+          minWidth: 300,
+          maxWidth: 300,
+          flexShrink: 0
         }}>
           <SearchIcon sx={{ color: 'text.secondary', mr: 1 }} />
           <InputBase
@@ -69,7 +75,7 @@ const Header = ({ onMenuClick }) => {
       </Box>
 
       {/* Kullanıcı Profili Bölümü */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: -8 }}>
         <Avatar
           src={user?.profile_picture}
           sx={{ width: 32, height: 32 }}
