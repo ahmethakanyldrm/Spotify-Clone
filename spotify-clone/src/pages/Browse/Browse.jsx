@@ -31,24 +31,25 @@ const Browse = () => {
 
   return (
     <Box sx={{ 
-      p: { xs: 1, md: 3 },
       width: '100%',
+      maxWidth: '100%',
       height: '100%',
       display: 'flex',
-      flexDirection: 'column'
+      flexDirection: 'column',
+      overflow: 'hidden'
     }}>
       <Typography 
         variant="h4" 
         sx={{ 
           color: 'white', 
           fontWeight: 'bold', 
-          mb: 4,
+          mb: { xs: 2, md: 4 },
           fontSize: { xs: '1.5rem', md: '2rem' }
         }}
       >
         Hepsine göz at
       </Typography>
-      <Grid container spacing={2} sx={{ width: '100%' }}>
+      <Grid container spacing={{ xs: 1, md: 2 }} sx={{ width: '100%', maxWidth: '100%', m: 0 }}>
         {categories
           .filter((category) =>
             category.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -61,8 +62,8 @@ const Browse = () => {
                 borderRadius: '8px',
                 overflow: 'hidden',
                 position: 'relative',
-                height: '187px',
-                width: '315px',
+                height: '167px',
+                width: '297px',
                 cursor: 'pointer',
                 transition: 'all 0.3s ease',
                 p: '12px',
@@ -77,7 +78,7 @@ const Browse = () => {
                 sx={{
                   color: 'white',
                   fontWeight: 'bold',
-                  fontSize: '1.5rem',
+                  fontSize: { xs: '1rem', sm: '1.2rem', md: '1.5rem' },
                   position: 'relative',
                   zIndex: 1,
                 }}
@@ -92,8 +93,8 @@ const Browse = () => {
                   position: 'absolute',
                   right: '-15px',
                   bottom: '-15px',
-                  width: '100px',
-                  height: '100px',
+                  width: '172px',
+                  height: '172px',
                   objectFit: 'cover',
                   transform: 'rotate(25deg)',
                   boxShadow: '0 4px 12px rgba(0,0,0,0.4)',

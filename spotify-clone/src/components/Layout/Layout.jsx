@@ -1,61 +1,90 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Box, Drawer } from '@mui/material';
+import { Box, Drawer, useTheme, useMediaQuery, IconButton } from '@mui/material';
 import Sidebar from '../Sidebar/Sidebar';
 import Header from '../Header/Header';
 import MusicPlayer from '../MusicPlayer/MusicPlayer';
+import { MenuIcon } from '../../assets/icons';
 
 const drawerWidth = 240;
+const collapsedDrawerWidth = 0;
 
 const Layout = ({ children }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isTablet = useMediaQuery(theme.breakpoints.down('lg'));
 
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { currentTrack } = useSelector((state) => state.spotify);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
-  return (
-    <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#000' }}>
-      <Box
-        component="nav"
-        sx={{ width: { md: drawerWidth }, flexShrink: { md: 0 } }}
-      >
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{ keepMounted: true }}
-          sx={{
-            display: { xs: 'block', md: 'none' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: drawerWidth,
-              backgroundColor: '#000',
-              borderRight: 'none',
-            },
-          }}
-        >
-          <Sidebar />
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', md: 'block' },
-            '& .MuiDrawer-paper': {
-              boxSizing: 'border-box',
-              width: drawerWidth,
-              backgroundColor: '#000',
-              borderRight: '1px solid rgba(255, 255, 255, 0.1)',
-            },
-          }}
-          open
-        >
-          <Sidebar />
-        </Drawer>
-      </Box>
+  const handleSidebarToggle = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
+  };
 
+  const getSidebarWidth = () => {
+    if (isMobile) return 0;
+    if (sidebarCollapsed) return collapsedDrawerWidth;
+    return drawerWidth;
+  };
+
+  return (
+    <Box sx={{ display: 'flex', height: '100vh', backgroundColor: '#000', overflow: 'hidden' }}>
+      {/* Mobile Drawer */}
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{ keepMounted: true }}
+        sx={{
+          display: { xs: 'block', md: 'none' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: drawerWidth,
+            backgroundColor: '#000',
+            borderRight: 'none',
+          },
+        }}
+      >
+        <Sidebar isCollapsed={false} onMobileClose={() => setMobileOpen(false)} />
+      </Drawer>
+
+      {/* Desktop Sidebar */}
+      <Box
+        sx={{
+          display: { xs: 'none', md: 'flex' },
+          flexDirection: 'column',
+          width: sidebarCollapsed ? collapsedDrawerWidth : drawerWidth,
+          flexShrink: 0,
+          transition: 'width 0.3s ease',
+          overflow: 'hidden',
+          backgroundColor: '#000',
+          borderRight: '1px solid rgba(255, 255, 255, 0.1)',
+          position: 'relative',
+          zIndex: 1
+        }}
+      >
+        <Box sx={{ 
+          width: sidebarCollapsed ? collapsedDrawerWidth : drawerWidth, 
+          height: '100%',
+          transition: 'width 0.3s ease',
+          overflow: 'hidden'
+        }}>
+          <Sidebar 
+            isCollapsed={sidebarCollapsed} 
+            onToggle={handleSidebarToggle}
+            onMobileClose={() => setMobileOpen(false)}
+          />
+        </Box>
+      </Box>
+      
+      {/* Sidebar Kapalıyken Açma Butonu - Header içinde göster */}
+
+      {/* Main Content */}
       <Box
         component="main"
         sx={{
@@ -63,12 +92,13 @@ const Layout = ({ children }) => {
           display: 'flex',
           flexDirection: 'column',
           height: '100vh',
-          overflow: 'auto',
-          width: '1506px',
-          maxWidth: '1506px',
-          minWidth: '1506px',
-          flexShrink: 0,
-          backgroundColor: '#121212'
+          overflow: 'hidden',
+          flex: 1,
+          backgroundColor: '#121212',
+          position: 'relative',
+          minWidth: 0,
+          width: { xs: '100vw', md: `calc(100vw - ${getSidebarWidth()}px)` },
+          transition: 'width 0.3s ease',
         }}
       >
         <Box
@@ -77,14 +107,10 @@ const Layout = ({ children }) => {
             overflowY: 'auto',
             overflowX: 'hidden',
             position: 'relative',
-            backgroundColor: '#121212',
-            borderRadius: { md: '8px' },
-            mb: currentTrack ? '200px' : '100px',
-            width: '1506px',
-            maxWidth: '1506px',
-            minWidth: '1506px',
-            flexShrink: 0,
+            background: 'linear-gradient(180deg, rgba(40, 40, 40, 1) 0%, #121212 300px)',
+            pb: currentTrack ? { xs: '100px', md: '110px' } : { xs: 2, md: 3 },
             minHeight: '100vh',
+            width: '100%',
             '&::-webkit-scrollbar': {
               width: '12px',
             },
@@ -102,34 +128,38 @@ const Layout = ({ children }) => {
             },
           }}
         >
-          <Header onMenuClick={handleDrawerToggle} />
+          <Header 
+            onMenuClick={handleDrawerToggle} 
+            onSidebarToggle={handleSidebarToggle}
+            sidebarCollapsed={sidebarCollapsed}
+          />
           <Box sx={{ 
-            py: 3, 
-            pl: 3, 
-            pr: 3, 
+            py: { xs: 2, md: 3 }, 
+            px: { xs: 2, sm: 2.5, md: 3, lg: 4 }, 
             width: '100%',
             maxWidth: '100%',
-            overflowX: 'hidden'
+            overflowX: 'hidden',
+            boxSizing: 'border-box'
           }}>
             {children}
           </Box>
         </Box>
 
+        {/* Music Player */}
         {currentTrack && (
           <Box
             sx={{
               position: 'fixed',
               bottom: 0,
-              left: { md: drawerWidth },
+              left: { xs: 0, md: getSidebarWidth() },
               right: 0,
-              height: '90px',
+              height: { xs: '80px', md: '90px' },
               backgroundColor: '#181818',
               borderTop: '1px solid #282828',
               zIndex: 1300,
-              m: { md: 1 },
-              mt: 0,
-              borderBottomLeftRadius: { md: '8px' },
-              borderBottomRightRadius: { md: '8px' },
+              transition: 'left 0.3s ease, width 0.3s ease',
+              boxSizing: 'border-box',
+              width: { xs: '100vw', md: `calc(100vw - ${getSidebarWidth()}px)` }
             }}
           >
             <MusicPlayer />

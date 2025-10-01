@@ -31,11 +31,16 @@ const PlaylistCard = ({ title, subtitle, image }) => {
     if (isThisCardPlaying) {
       dispatch(togglePlayPause())
     } else {
+      // Generate random duration between 2:30 and 5:30
+      const randomMinutes = Math.floor(Math.random() * 3) + 2; // 2, 3, or 4 minutes
+      const randomSeconds = Math.floor(Math.random() * 60); // 0-59 seconds
+      const duration = `${randomMinutes}:${randomSeconds.toString().padStart(2, '0')}`;
+      
       const trackToPlay = {
         title: title,
         artist: subtitle,
         album: 'Album Name',
-        duration: '3:45',
+        duration: duration,
         cover_image: image
       }
       dispatch(setCurrentTrack(trackToPlay))
@@ -49,13 +54,15 @@ const PlaylistCard = ({ title, subtitle, image }) => {
     <Box
       sx={{
         position: 'relative',
-        width: '166px',
-        height: '320px',
+        width: { xs: 160, sm: 180, md: 200 },
+        height: { xs: 240, sm: 260, md: 280 },
         cursor: 'pointer',
         transition: 'all 0.3s ease',
-        borderRadius: '10px',
+        borderRadius: '8px',
         overflow: 'hidden',
         backgroundColor: 'rgba(255, 255, 255, 0.08)',
+        display: 'flex',
+        flexDirection: 'column',
         '&:hover': {
           backgroundColor: 'rgba(255, 255, 255, 0.2)',
           '& .play-button': {
@@ -74,32 +81,56 @@ const PlaylistCard = ({ title, subtitle, image }) => {
           src={image}
           alt={title}
           sx={{
-            height: 171,
-            width: '100%',
+            width: { xs: 120, sm: 140, md: 160 },
+            height: { xs: 120, sm: 140, md: 160 },
             objectFit: 'cover',
             borderRadius: 1,
-            mb: 2,
             boxShadow: '0 8px 24px rgba(0,0,0,0.5)'
           }}
         />
       </Box>
 
-      <Typography variant="h6" sx={{ color: 'white', fontWeight: 'bold', fontSize: '1rem', px: 2, mt: -2 }}>
-        {title}
-      </Typography>
-      <Typography variant="body2" sx={{ color: 'text.secondary', px: 2, mt: 0.5 }}>
-        {subtitle}
-      </Typography>
+      <Box sx={{ px: 2, pb: 2, flex: 1 }}>
+        <Typography 
+          variant="h6" 
+          sx={{ 
+            color: 'white', 
+            fontWeight: 'bold', 
+            fontSize: { xs: '0.9rem', sm: '0.95rem', md: '1rem' },
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+            mb: 0.5
+          }}
+        >
+          {title}
+        </Typography>
+        <Typography 
+          variant="body2" 
+          sx={{ 
+            color: 'text.secondary', 
+            fontSize: { xs: '0.8rem', sm: '0.85rem', md: '0.9rem' },
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            lineHeight: 1.4
+          }}
+        >
+          {subtitle}
+        </Typography>
+      </Box>
 
-      <Fade in={isHovered}>
+      <Fade in={isHovered || isThisCardPlaying}>
         <Box
           className="play-button"
           sx={{
             position: 'absolute',
-            bottom: 120,
-            right: 24,
-            width: 48,
-            height: 48,
+            bottom: { xs: 60, sm: 65, md: 70 },
+            right: { xs: 12, sm: 14, md: 16 },
+            width: { xs: 44, sm: 46, md: 48 },
+            height: { xs: 44, sm: 46, md: 48 },
             borderRadius: '50%',
             backgroundColor: 'primary.main',
             display: 'flex',
@@ -107,6 +138,8 @@ const PlaylistCard = ({ title, subtitle, image }) => {
             justifyContent: 'center',
             boxShadow: '0 8px 24px rgba(0,0,0,0.5)',
             transition: 'transform 0.2s ease-in-out, background-color 0.2s ease',
+            opacity: isThisCardPlaying ? 1 : 0,
+            transform: isThisCardPlaying ? 'translateY(0)' : 'translateY(8px)',
             '&:hover': {
               transform: 'scale(1.05)',
               backgroundColor: '#1ed760',
@@ -114,8 +147,11 @@ const PlaylistCard = ({ title, subtitle, image }) => {
           }}
           onClick={handlePlayClick}
         >
-          <IconButton sx={{ color: 'black' }}>
-            {isThisCardPlaying ? <PauseIcon sx={{ fontSize: 40 }} /> : <PlayArrowIcon sx={{ fontSize: 40 }} />}
+          <IconButton sx={{ color: 'black', p: 0 }}>
+            {isThisCardPlaying ? 
+              <PauseIcon sx={{ fontSize: { xs: 28, sm: 30, md: 32 } }} /> : 
+              <PlayArrowIcon sx={{ fontSize: { xs: 28, sm: 30, md: 32 } }} />
+            }
           </IconButton>
         </Box>
       </Fade>

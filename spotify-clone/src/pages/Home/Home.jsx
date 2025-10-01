@@ -43,31 +43,52 @@ const Home = () => {
   return (
     <Box sx={{ 
       width: '100%',
+      maxWidth: '100%',
       height: '100%',
       display: 'flex',
       flexDirection: 'column',
-      pb: 20
+      overflow: 'hidden'
     }}>
       {/* Yakında Çalınanlar Bölümü */}
-      <Box sx={{ mb: 4, width: "100%" }}>
+      <Box sx={{ mb: { xs: 3, md: 4 }, width: "100%", maxWidth: "100%", overflow: "hidden" }}>
         <Typography
           variant="h5"
-          sx={{ color: "white", fontWeight: "bold", mb: 2 }}
+          sx={{ 
+            color: "white", 
+            fontWeight: "bold", 
+            mb: 2,
+            fontSize: { xs: '1.2rem', md: '1.5rem' }
+          }}
         >
           Yakında Çalanlar
         </Typography>
         <Box sx={{
           display: 'flex',
-          gap: 2,
+          gap: { xs: 1.5, sm: 2, md: 2.5 },
           width: '100%',
+          maxWidth: '100%',
           overflowX: 'auto',
-          pb: 1
+          overflowY: 'hidden',
+          pb: 1,
+          justifyContent: 'flex-start',
+          '&::-webkit-scrollbar': {
+            height: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'transparent',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'rgba(255, 255, 255, 0.3)',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          },
         }}>
           {recentlyPlayed
             .filter((item) =>
               item.title.toLowerCase().includes(searchQuery.toLowerCase())
             )
-            .slice(0, 5)
             .map((item, index) => (
               <Box key={index} sx={{ flexShrink: 0 }}>
                 <PlaylistCard
@@ -81,28 +102,55 @@ const Home = () => {
       </Box>
 
       {/* Tavsiye Edilenler Bölümü */}
-      <Box sx={{ mb: 4, width: "100%" }}>
+      <Box sx={{ mb: { xs: 3, md: 4 }, width: "100%", maxWidth: "100%", overflow: "hidden" }}>
         <Typography
           variant="h5"
-          sx={{ color: "white", fontWeight: "bold", mb: 1 }}
+          sx={{ 
+            color: "white", 
+            fontWeight: "bold", 
+            mb: 1,
+            fontSize: { xs: '1.2rem', md: '1.5rem' }
+          }}
         >
           Tavsiye Edilenler
         </Typography>
-        <Typography variant="body1" sx={{ color: "text.secondary", mb: 2 }}>
+        <Typography 
+          variant="body1" 
+          sx={{ 
+            color: "text.secondary", 
+            mb: 2,
+            fontSize: { xs: '0.9rem', md: '1rem' }
+          }}
+        >
           Sevdiğin her şeyden biraz dinle.
         </Typography>
         <Box sx={{
           display: 'flex',
-          gap: 2,
+          gap: { xs: 1.5, sm: 2, md: 2.5 },
           width: '100%',
+          maxWidth: '100%',
           overflowX: 'auto',
-          pb: 1
+          overflowY: 'hidden',
+          pb: 1,
+          justifyContent: 'flex-start',
+          '&::-webkit-scrollbar': {
+            height: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'transparent',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'rgba(255, 255, 255, 0.3)',
+            borderRadius: '4px',
+          },
+          '&::-webkit-scrollbar-thumb:hover': {
+            backgroundColor: 'rgba(255, 255, 255, 0.5)',
+          },
         }}>
           {recommended
             .filter((item) =>
               item.title.toLowerCase().includes(searchQuery.toLowerCase())
             )
-            .slice(0, 5)
             .map((item, index) => (
               <Box key={index} sx={{ flexShrink: 0 }}>
                 <PlaylistCard
